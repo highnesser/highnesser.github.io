@@ -7,6 +7,8 @@ import { clusterPainMentions } from "@/lib/painClustering";
 import { discoverCompetitors } from "@/lib/competitors";
 import { generateICPs } from "@/lib/icp";
 import { LLMNotConfiguredError } from "@/lib/llm";
+import { UnsafeUrlError } from "@/lib/ssrf";
+import { checkRateLimit } from "@/lib/rateLimit";
 import type { DiscoveryReport } from "@/lib/types";
 
 export const maxDuration = 300;
@@ -26,6 +28,23 @@ const bodySchema = z
  * Module 5 (feedback loop) is intentionally not wired here - see lib/feedbackLoop.ts.
  */
 export async function POST(req: NextRequest) {
+  const clientIp =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    req.headers.get("x-real-ip") ??
+    "unknown";
+  const rateLimit = checkRateLimit(clientIp);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "Rate limit exceeded. Try again later." },
+      {
+        status: 429,
+        headers: {
+          "retry-after": String(Math.ceil((rateLimit.retryAfterMs ?? 0) / 1000)),
+        },
+      }
+    );
+  }
+
   const parsed = bodySchema.safeParse(await req.json());
   if (!parsed.success) {
     return NextResponse.json(
@@ -73,6 +92,9 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     if (err instanceof LLMNotConfiguredError) {
       return NextResponse.json({ error: err.message }, { status: 412 });
+    }
+    if (err instanceof UnsafeUrlError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
     }
     console.error(err);
     return NextResponse.json(

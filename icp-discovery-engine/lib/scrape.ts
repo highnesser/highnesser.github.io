@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import { safeFetch } from "./ssrf";
 import type { LandingPageExtract } from "./types";
 
 /**
@@ -37,7 +38,7 @@ export async function extractLandingPage(
 }
 
 async function fetchDirect(url: string): Promise<string> {
-  const res = await fetch(url, {
+  const res = await safeFetch(url, {
     headers: {
       "user-agent":
         "Mozilla/5.0 (compatible; ICPDiscoveryEngine/0.1; +https://github.com)",
