@@ -3,6 +3,18 @@
 @tailwind utilities;
 
 body {
-  background: #0b0d12;
-  color: #e6e8ec;
+  background: #08080d;
+  color: #f2f0f8;
+}
+
+.bg-radial-glow {
+  background-image:
+    radial-gradient(55% 45% at 22% 8%, rgba(139, 92, 246, 0.32) 0%, rgba(139, 92, 246, 0) 65%),
+    radial-gradient(45% 40% at 82% 4%, rgba(124, 58, 237, 0.22) 0%, rgba(124, 58, 237, 0) 65%);
+}
+
+.pill-input:focus {
+  outline: none;
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
 }
