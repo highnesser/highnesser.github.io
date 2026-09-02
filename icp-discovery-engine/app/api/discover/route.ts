@@ -3,7 +3,7 @@ import { z } from "zod";
 import { extractLandingPage } from "@/lib/scrape";
 import { expandSeed } from "@/lib/seedExpansion";
 import { searchRedditPain } from "@/lib/reddit";
-import { clusterPainMentions } from "@/lib/painClustering";
+import { clusterPainMentions, findPainViaGroundedSearch } from "@/lib/painClustering";
 import { discoverCompetitors } from "@/lib/competitors";
 import { generateICPs } from "@/lib/icp";
 import { LLMNotConfiguredError } from "@/lib/llm";
@@ -66,14 +66,33 @@ export async function POST(req: NextRequest) {
     ]);
     warnings.push(...competitorResult.warnings);
 
-    if (painMentions.length === 0) {
-      warnings.push(
-        "No Reddit pain mentions found for the generated search terms - this can mean the category is genuinely novel (see README 'novel ideas' section) or the terms need manual refinement."
-      );
+    let painThemes = painMentions.length > 0 ? await clusterPainMentions(painMentions) : [];
+
+    if (painThemes.length === 0) {
+      // Reddit alone often has nothing for niche or geographically local
+      // products - try Gemini's grounded web search across the broader web
+      // (forums, reviews, social posts) before giving up. Grounding needs
+      // billing enabled on the Google Cloud project behind the API key, so
+      // on a pure free-tier key this reliably fails - that's expected and
+      // not surfaced as a warning (logged only), since the final "no pain
+      // signal found" warning below already covers the empty-result case.
+      try {
+        painThemes = await findPainViaGroundedSearch(seed);
+        if (painThemes.length > 0) {
+          warnings.push(
+            "No Reddit discussion found for this idea - pain themes below were sourced from a broader web search instead."
+          );
+        }
+      } catch (err) {
+        console.error("Web-based pain search unavailable:", (err as Error).message);
+      }
     }
 
-    const painThemes =
-      painMentions.length > 0 ? await clusterPainMentions(painMentions) : [];
+    if (painThemes.length === 0) {
+      warnings.push(
+        "No pain signal found on Reddit or the broader web for the generated search terms - this can mean the category is genuinely novel (see README 'novel ideas' section) or the terms need manual refinement."
+      );
+    }
 
     const icps = await generateICPs(seed, painThemes, competitorResult.matrix);
 

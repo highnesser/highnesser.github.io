@@ -184,6 +184,9 @@ function Report({ report }: { report: DiscoveryReport }) {
       <Section title="Product summary">
         <p className="text-neutral-300">{report.seedExpansion.productSummary}</p>
         <div className="mt-3 flex flex-wrap gap-2 text-xs">
+          <Chip>
+            📍 {report.seedExpansion.detectedMarket.country} ({report.seedExpansion.detectedMarket.currencySymbol} {report.seedExpansion.detectedMarket.currency})
+          </Chip>
           {report.seedExpansion.industryVerticals.map((v) => (
             <Chip key={v}>{v}</Chip>
           ))}

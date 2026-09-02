@@ -11,16 +11,24 @@ export interface LandingPageExtract {
   bodyExcerpt: string;
 }
 
+export interface DetectedMarket {
+  country: string;
+  currency: string;
+  currencySymbol: string;
+  confidence: "high" | "medium" | "low";
+}
+
 export interface SeedExpansion {
   productSummary: string;
   searchTerms: string[];
   problemConcepts: string[];
   industryVerticals: string[];
   adjacentCategories: string[];
+  detectedMarket: DetectedMarket;
 }
 
 export interface PainMention {
-  source: "reddit";
+  source: "reddit" | "web";
   subreddit: string;
   title: string;
   url: string;

@@ -9,13 +9,17 @@ import type {
 const SYSTEM = `You are a go-to-market strategist. Given validated pain themes and a
 competitive positioning matrix, produce hyper-specific Ideal Customer Profiles and
 concrete acquisition plays. Avoid generic advice like "post on social media" - name
-exact subreddits, exact job titles, exact triggers.`;
+exact subreddits, exact job titles, exact triggers. Always match the founder's actual
+target market: use the correct local currency for any prices, name acquisition
+channels that real people in that country/region actually use (not just US-centric
+defaults like generic subreddits or LinkedIn if the market doesn't skew that way),
+and reference locally recognizable companies, cities, or platforms where relevant.`;
 
 /**
  * Module 4: Automated ICP & Channel Discovery Generator.
  * Converts mined pain themes + competitive positioning into 2-3 ICPs, each
  * with acquisition channels, an outreach template, a lead magnet idea, and
- * landing page copy tailored to that ICP's language.
+ * landing page copy tailored to that ICP's language and detected market.
  */
 export async function generateICPs(
   seed: SeedExpansion,
@@ -26,9 +30,11 @@ export async function generateICPs(
     .map((p) => `- ${p.theme} (score ${p.painScore}): ${p.summary}`)
     .join("\n");
   const gapSummary = positioning.featureGaps.join("; ") || "none identified";
+  const market = seed.detectedMarket;
 
   const prompt = `Product summary: ${seed.productSummary}
 Industry verticals: ${seed.industryVerticals.join(", ")}
+Target market: ${market.country} (currency: ${market.currency}, symbol: ${market.currencySymbol}, detection confidence: ${market.confidence})
 
 Top validated pain themes:
 ${painSummary || "none found - reason from the product summary and problem concepts instead"}
@@ -36,7 +42,9 @@ ${painSummary || "none found - reason from the product summary and problem conce
 Problem concepts: ${seed.problemConcepts.join(", ")}
 Competitive feature gaps: ${gapSummary}
 
-Generate 2-3 hyper-specific Ideal Customer Profiles. Return JSON:
+Generate 2-3 hyper-specific Ideal Customer Profiles for the target market above -
+not a generic or US-default market unless the target market actually is the US/Global.
+Return JSON:
 {
   "icps": [
     {
@@ -45,7 +53,7 @@ Generate 2-3 hyper-specific Ideal Customer Profiles. Return JSON:
       "companySize": "specific range, e.g. '10-50 employees'",
       "dailyWorkflow": "2-3 sentences on their actual day-to-day workflow relevant to this problem",
       "trigger": "the specific event/moment that makes them start searching for a solution",
-      "channels": ["3-5 exact acquisition channels, e.g. 'r/agency Reddit community seeding', 'LinkedIn outreach to Ops Managers at 10-50 person agencies', 'programmatic SEO for [X] comparison pages'"],
+      "channels": ["3-5 exact acquisition channels real people in this market actually use - name real local communities, platforms, or publications, not generic placeholders"],
       "outreachTemplate": "a short cold outreach email (3-5 sentences) written in this ICP's own language, referencing their specific pain",
       "leadMagnetIdea": "one specific lead magnet idea tailored to this ICP",
       "landingPageCopy": {
