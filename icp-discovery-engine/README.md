@@ -11,7 +11,7 @@ Profiles with acquisition channels, outreach copy, and landing page copy.
 
 ---
 
-## Current status — MVP scaffold complete (2026-09-02)
+## Current status — MVP scaffold + baseline security hardening (2026-09-02)
 
 The full pipeline architecture (modules 1-4) is built and wired end-to-end
 through a working Next.js app. Module 5 (feedback loop) is deliberately
@@ -41,6 +41,20 @@ text description, and get a real (not mocked) end-to-end report:
 
 Without `SERPAPI_KEY`, competitor discovery is skipped gracefully (a warning
 is shown in the report instead of failing the whole pipeline).
+
+A flow-by-flow security review before further build-out flagged two real
+gaps in the initial scaffold, both now fixed and runtime-verified:
+- **SSRF in the landing-page scraper.** `extractLandingPage()` fetched any
+  user-supplied URL server-side with no host restriction — a direct path to
+  internal services or cloud metadata endpoints (`169.254.169.254`). Fixed in
+  `lib/ssrf.ts` (`safeFetch`/`assertSafeUrl`): blocks non-http(s) schemes,
+  loopback/private/link-local/carrier-NAT ranges on both the hostname and
+  every DNS-resolved address (guards against DNS rebinding), and validates
+  each redirect hop manually.
+- **No rate limiting on `/api/discover`.** Every request triggers metered
+  Anthropic/SerpAPI/Firecrawl calls with no cap. Fixed in `lib/rateLimit.ts`
+  with a per-IP sliding window (5 req/hour) — noted below as a baseline to
+  replace with a durable store before real deployment.
 
 ### Deliberate scope decisions (read before "fixing" these)
 
@@ -104,6 +118,8 @@ lib/
   competitors.ts            Module 3: SerpAPI search + landing page scrape + positioning synthesis
   icp.ts                    Module 4: ICP + channel + outreach copy generation
   feedbackLoop.ts           Module 5: STUB — see "Deliberate scope decisions" above
+  ssrf.ts                   Security: blocks internal/metadata-address fetches (used by scrape.ts)
+  rateLimit.ts              Security: per-IP request cap for /api/discover (in-memory baseline)
 ```
 
 Data flow: `page.tsx` → `POST /api/discover` → scrape/parse → expand seed →
@@ -147,6 +163,10 @@ yet — see "Next up."
    planned shape.
 7. **Auth + multi-tenant dashboard.** Currently single-user, no auth, no
    saved history.
+8. **Durable rate limiting.** `lib/rateLimit.ts` is an in-memory per-process
+   limiter — fine as a stopgap, but it resets on redeploy and won't share
+   state across serverless instances. Swap for a durable store (e.g. Upstash
+   Redis) once this is more than a local prototype.
 
 ## Known limitations / things to be honest about
 
