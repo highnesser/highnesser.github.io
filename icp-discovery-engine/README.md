@@ -31,7 +31,10 @@ stubbed — see below for why.
 
 ### What actually works right now
 
-With just `ANTHROPIC_API_KEY` set, you can run `npm run dev`, submit a URL or
+The LLM was switched from Anthropic (metered, no permanent free tier) to
+**Google Gemini's free tier** (`lib/llm.ts`) specifically so this can be run
+and tested with zero spend risk — no credit card is required to get a key.
+With just `GEMINI_API_KEY` set, you can run `npm run dev`, submit a URL or
 text description, and get a real (not mocked) end-to-end report:
 - Landing page scrape (or raw text) → LLM-generated search terms/verticals
 - Live Reddit search (public, unauthenticated — no key required) for pain
@@ -52,9 +55,10 @@ gaps in the initial scaffold, both now fixed and runtime-verified:
   every DNS-resolved address (guards against DNS rebinding), and validates
   each redirect hop manually.
 - **No rate limiting on `/api/discover`.** Every request triggers metered
-  Anthropic/SerpAPI/Firecrawl calls with no cap. Fixed in `lib/rateLimit.ts`
-  with a per-IP sliding window (5 req/hour) — noted below as a baseline to
-  replace with a durable store before real deployment.
+  SerpAPI/Firecrawl calls (Gemini's free tier has its own daily cap, but is
+  still worth protecting) with no cap. Fixed in `lib/rateLimit.ts` with a
+  per-IP sliding window (5 req/hour) — noted below as a baseline to replace
+  with a durable store before real deployment.
 
 ### Deliberate scope decisions (read before "fixing" these)
 
@@ -84,7 +88,8 @@ gaps in the initial scaffold, both now fixed and runtime-verified:
 cd icp-discovery-engine
 npm install
 cp .env.example .env.local
-# then edit .env.local — at minimum set ANTHROPIC_API_KEY
+# then edit .env.local — at minimum set GEMINI_API_KEY (free, no card needed:
+# https://aistudio.google.com/apikey)
 npm run dev
 ```
 
@@ -92,13 +97,13 @@ Open http://localhost:3000.
 
 ### Required / optional API keys
 
-| Key | Required? | What breaks without it |
-|---|---|---|
-| `ANTHROPIC_API_KEY` | **Required** | Nothing works — every module after input parsing calls Claude. |
-| `SERPAPI_KEY` | Optional | Competitor discovery (module 3) is skipped with a warning. |
-| `FIRECRAWL_API_KEY` | Optional | Falls back to a plain fetch+cheerio scraper (works for most static sites, weaker on JS-heavy sites). |
-| `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` | Optional | Falls back to Reddit's unauthenticated public search JSON endpoint — works, but is rate-limited and less reliable under load. |
-| `INSTANTLY_API_KEY` / `HUBSPOT_API_KEY` | Not used yet | Reserved for module 5 once it's built. |
+| Key | Required? | Cost | What breaks without it |
+|---|---|---|---|
+| `GEMINI_API_KEY` | **Required** | Free tier, no card required — get one at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | Nothing works — every module after input parsing calls the LLM. |
+| `SERPAPI_KEY` | Optional | Free tier (limited searches/month) | Competitor discovery (module 3) is skipped with a warning. |
+| `FIRECRAWL_API_KEY` | Optional | Free tier available | Falls back to a plain fetch+cheerio scraper (works for most static sites, weaker on JS-heavy sites). |
+| `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` | Optional | Free | Falls back to Reddit's unauthenticated public search JSON endpoint — works, but is rate-limited and less reliable under load. |
+| `INSTANTLY_API_KEY` / `HUBSPOT_API_KEY` | Not used yet | — | Reserved for module 5 once it's built. |
 
 ---
 
@@ -110,7 +115,7 @@ app/
   api/discover/route.ts     Orchestrator: wires modules 1-4 into one pipeline
 lib/
   types.ts                  Shared types for the whole pipeline
-  llm.ts                    Thin Anthropic Messages API client (fetch-based)
+  llm.ts                    Thin Gemini API client (fetch-based, free-tier LLM)
   scrape.ts                 Module 1: landing page extraction (cheerio / Firecrawl)
   seedExpansion.ts          Module 1: LLM-driven search term/vertical generation
   reddit.ts                 Module 2: Reddit public search for pain mentions
@@ -172,12 +177,16 @@ yet — see "Next up."
 
 - No automated tests yet.
 - `npm run build` has been validated to compile cleanly, but the live
-  pipeline (real Reddit + SerpAPI + Anthropic calls) has **not** been
-  exercised end-to-end in this environment since no API keys are configured
-  here — test with your own keys before trusting the output.
+  pipeline (real Reddit + SerpAPI + Gemini calls) has **not** been exercised
+  end-to-end in this environment since no API keys are configured here —
+  test with your own free-tier keys before trusting the output.
 - Error handling degrades gracefully per-module (competitor discovery, for
-  example) but a hard Anthropic API outage will fail the whole request —
-  there's no retry/backoff yet.
+  example) but a hard Gemini API outage or free-tier quota exhaustion will
+  fail the whole request — there's no retry/backoff yet.
+- Gemini's free tier has daily/per-minute rate limits of its own (separate
+  from our `lib/rateLimit.ts`). If you hit those, requests fail with a clear
+  error rather than silently charging you — Gemini's free tier has no
+  pay-as-you-go fallback unless you explicitly enable billing.
 - The `next` dependency is pinned to `14.2.35` to pick up published security
   fixes; a residual high-severity advisory remains in a transitive dev-only
   postcss dependency bundled inside `next` itself (source-map path
