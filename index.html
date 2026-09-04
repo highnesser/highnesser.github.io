@@ -97,6 +97,22 @@
   .stack{display:flex;flex-wrap:wrap;gap:9px;margin-top:8px}
   .stack span{font-family:var(--mono);font-size:12px;color:var(--paper-dim);border:1px solid var(--line);background:var(--ink-2);padding:6px 11px;border-radius:2px}
 
+  /* ---------- proof / work samples ---------- */
+  .proof-cards{display:flex;flex-direction:column;gap:22px}
+  .proof-intro{color:var(--paper-dim);font-size:14.5px;margin-bottom:18px}
+  .sample{border:1px solid var(--line);border-left:3px solid var(--amber);background:var(--ink-3);border-radius:4px;padding:16px 20px;margin:16px 0}
+  .sample-label{font-family:var(--mono);font-size:11px;color:var(--amber);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:10px}
+  .sample p{font-family:var(--mono);font-size:13px;color:var(--paper-dim);line-height:1.7;margin:0}
+  .sample p+p{margin-top:10px}
+  .audience-note{color:var(--fog);font-size:13.5px;margin:14px 0 8px}
+  .audience-list{list-style:none}
+  .audience-list li{padding:8px 0 8px 16px;border-left:2px solid var(--line);margin-top:6px;font-size:13.5px;color:var(--paper-dim)}
+  .audience-list b{display:block;font-family:var(--mono);font-size:10.5px;color:var(--amber);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;font-weight:600}
+  .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
+  .gallery figure{margin:0;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--ink-3)}
+  .gallery img{display:block;width:100%;height:auto;max-width:100%}
+  .gallery figcaption{padding:9px 12px;font-family:var(--mono);font-size:11px;color:var(--fog);border-top:1px solid var(--line)}
+
   /* ---------- experience ---------- */
   .xp{display:flex;flex-direction:column}
   .xp-item{display:grid;grid-template-columns:150px 1fr;gap:26px;padding:22px 0;border-top:1px solid var(--line)}
@@ -150,6 +166,7 @@
       <a href="#results">results</a>
       <a href="#work">work</a>
       <a href="#edge">edge</a>
+      <a href="#proof">proof</a>
       <a href="#contact">contact</a>
     </div>
   </div>
@@ -416,6 +433,119 @@
           <div class="xp-desc">Meta campaigns for eCommerce fashion (iterative creative testing), and Google Ads lead-gen for a B2B SaaS product where pipeline quality mattered more than cheap clicks ($26.44 CPL at a 49% conversion rate).</div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<section id="proof">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">05</span>
+      <div>
+        <div class="sec-title">Proof</div>
+        <div class="sec-sub">// a peek at the actual work behind the numbers</div>
+      </div>
+    </div>
+    <div class="proof-cards">
+
+      <div class="case reveal" style="border-color:var(--amber)">
+        <div class="case-top">
+          <div>
+            <div class="case-title">ADACertify</div>
+            <div class="case-role">Web-accessibility SaaS &middot; flagship 0-to-1 build</div>
+          </div>
+          <div class="case-tag rev">FLAGSHIP</div>
+        </div>
+        <div class="case-body">
+          <p class="proof-intro">Took a web-accessibility product from zero to 100 monthly recurring customers plus 15 AppSumo lifetime buyers. Owned the whole motion: paid ads, email, a webinar funnel, and an AppSumo launch, and wrote all the copy behind it.</p>
+          <div class="case-stats">
+            <div class="cs"><div class="n">0&rarr;100</div><div class="l">Monthly recurring customers</div></div>
+            <div class="cs"><div class="n">15</div><div class="l">AppSumo lifetime buyers</div></div>
+            <div class="cs"><div class="n">4</div><div class="l">Channels: paid &middot; email &middot; webinar &middot; marketplace</div></div>
+            <div class="cs"><div class="n">Solo</div><div class="l">Full funnel built</div></div>
+          </div>
+
+          <div class="sample" style="margin-top:22px">
+            <span class="sample-label">A slice of the ad copy</span>
+            <p>&ldquo;Avoid $150K ADA Lawsuits in 2025. Over 4,600 cases filed last year, don&rsquo;t let your website be next. Join our free webinar to learn quick fixes with ADACertify and protect your business today.&rdquo;</p>
+          </div>
+          <div class="audience-note">Same product, written for three different buyers:</div>
+          <ul class="audience-list">
+            <li><b>Business owner</b>&ldquo;One missed element could trigger legal woes and hefty fines.&rdquo;</li>
+            <li><b>Agency</b>&ldquo;Add $10K/month to your agency with one ADA service.&rdquo;</li>
+            <li><b>Freelancer</b>&ldquo;Turn one line of code into a $1K+ monthly side gig.&rdquo;</li>
+          </ul>
+
+          <div class="sample" style="margin-top:22px">
+            <span class="sample-label">From the sales page I wrote</span>
+            <p>&ldquo;This Website Mistake Could Cost You Thousands. Protect Your Business Instantly, and Turn Compliance into Profit.&rdquo;</p>
+            <p>&ldquo;Lawyers are using bots to hunt for tiny website errors and sue business owners for $20k&ndash;$50k settlements. Get instant scans, fixes, and certification that keeps your business protected.&rdquo;</p>
+          </div>
+          <p style="color:var(--fog);font-size:13.5px;margin-top:12px">The page opened by making readers self-diagnose their risk with five questions, e.g. &ldquo;Can a screen reader describe your site to a blind visitor, or will they only hear image, image, image?&rdquo; Then it framed their options: do nothing, hire a $5,000 consultant, use a widget that only masks the problem, or a fourth, better way.</p>
+
+          <div class="gallery">
+            <figure>
+              <img src="images/adacertify-calendar-1.png" alt="Email campaign scheduling calendar, November 2024" loading="lazy">
+              <figcaption>Campaign scheduling across a live launch period.</figcaption>
+            </figure>
+            <figure>
+              <img src="images/adacertify-calendar-2.png" alt="Broadcast calendar showing scheduled sends per day" loading="lazy">
+              <figcaption>Campaign scheduling across a live launch period.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+
+      <div class="case reveal">
+        <div class="case-top">
+          <div>
+            <div class="case-title">Launch Revenue &mdash; Techhubsquare</div>
+            <div class="case-role">30+ SaaS launches &middot; email + affiliate</div>
+          </div>
+          <div class="case-tag rev">REVENUE</div>
+        </div>
+        <div class="case-body">
+          <p class="proof-intro">Ran email and affiliate launches across 30+ software products, writing the campaigns that turned cold audiences into buyers.</p>
+          <div class="case-stats">
+            <div class="cs"><div class="n">$60k+</div><div class="l">Attributable revenue</div></div>
+            <div class="cs"><div class="n">30+</div><div class="l">Launches</div></div>
+            <div class="cs"><div class="n">$37K+</div><div class="l">Peak month commissions</div></div>
+          </div>
+          <div class="gallery">
+            <figure>
+              <img src="images/commissions-37k.png" alt="Affiliate commissions dashboard showing $37,144.50" loading="lazy">
+              <figcaption>Real commission dashboards across different launch periods.</figcaption>
+            </figure>
+            <figure>
+              <img src="images/commissions-10k.png" alt="Affiliate commissions dashboard showing $10,844.23" loading="lazy">
+              <figcaption>Real commission dashboards across different launch periods.</figcaption>
+            </figure>
+            <figure>
+              <img src="images/commissions-2k.png" alt="Affiliate commissions dashboard showing $2,501.47" loading="lazy">
+              <figcaption>Real commission dashboards across different launch periods.</figcaption>
+            </figure>
+            <figure>
+              <img src="images/commissions-112.png" alt="Affiliate commissions dashboard showing $112.42" loading="lazy">
+              <figcaption>Real commission dashboards across different launch periods.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+
+      <div class="case reveal">
+        <div class="case-top">
+          <div>
+            <div class="case-title">The Measurement Catch</div>
+            <div class="case-role">Why the dashboard isn&rsquo;t the source of truth</div>
+          </div>
+          <div class="case-tag b2b">DIFFERENTIATOR</div>
+        </div>
+        <div class="case-body">
+          <p class="proof-intro">My edge isn&rsquo;t just running campaigns, it&rsquo;s catching when the numbers lie.</p>
+          <p style="color:var(--paper-dim);font-size:14.5px">On ADACertify, the ad platform reported 28 leads and zero sales, it looked like the ads were failing. But the real backend showed 69 registrations and 11 sales of a $397 product. The pixel was misconfigured. On the Google side, I caught page-view and video-engagement actions mis-set as primary conversions, inflating the numbers. I reconcile against the backend, not the dashboard, which is where most growth decisions quietly go wrong.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
