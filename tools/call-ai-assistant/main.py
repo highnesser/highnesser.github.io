@@ -198,7 +198,7 @@ async def process_call(file: UploadFile = File(...)):
         """
 
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-flash-latest",
             contents=[uploaded_gemini_file, prompt],
             config=types.GenerateContentConfig(
                 response_mime_type="application/json"
